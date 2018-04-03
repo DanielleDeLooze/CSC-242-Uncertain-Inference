@@ -12,6 +12,7 @@ public class BNInferencer {
     public static void main(String[] argv){
         EnumerationAsk asker = new EnumerationAsk();
         RejectionSampling rej = new RejectionSampling();
+        LikelihoodWeighting like = new LikelihoodWeighting();
 
         if(argv[0].contains(".xml")){
             XMLBIFParser x = new XMLBIFParser();
@@ -22,7 +23,8 @@ public class BNInferencer {
                     e.put(bn.getVariableByName(argv[i]), argv[i+1]);
                 }
                 //Distribution dist = asker.ask(bn, bn.getVariableByName(argv[1]), e);
-                Distribution dist = rej.rejectionSampling(bn.getVariableByName(argv[1]),e, bn,100000 );
+                //Distribution dist = rej.rejectionSampling(bn.getVariableByName(argv[1]),e, bn,100000 );
+                Distribution dist = like.likelihoodWeighting(bn.getVariableByName(argv[1]), e, bn, 100000);
                 System.out.println(dist);
             } catch (IOException e) {
                 e.printStackTrace();

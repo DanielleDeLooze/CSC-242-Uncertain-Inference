@@ -1,4 +1,73 @@
 package bn.inference;
 
+import bn.core.Assignment;
+import bn.core.BayesianNetwork;
+import bn.core.Distribution;
+import bn.core.RandomVariable;
+
+import java.util.List;
+
 public class LikelihoodWeighting {
+
+    public class WeightedSample{
+        Assignment e;
+        double weight;
+
+        public WeightedSample(Assignment e, double weight){
+            this.e = e;
+            this.weight = weight;
+        }
+    }
+
+    public Distribution likelihoodWeighting(RandomVariable X, Assignment e, BayesianNetwork bn, int num){
+        Distribution weights = new Distribution();
+
+        for(int i =0; i <= num; i++){
+            WeightedSample sample = weightedSample(bn, e);
+            if(weights.get(sample.e.get(X)) == null){
+                weights.put(sample.e.get(X), sample.weight);
+            }
+            else{
+                Double counter = weights.get(sample.e.get(X));
+                counter += sample.weight;
+                weights.put(sample.e.get(X), counter);
+            }
+        }
+
+        weights.normalize();
+        return weights;
+    }
+
+    public WeightedSample weightedSample(BayesianNetwork bn, Assignment e){
+        double w = 1;
+        Assignment x = e.copy();
+        List<RandomVariable> vars = bn.getVariableListTopologicallySorted();
+
+        for(RandomVariable var: vars){
+            if(e.containsKey(var)){
+                w = w * bn.getProb(var, x);
+            }
+            else{
+                x.set(var, randomValue(bn, x, var));
+            }
+        }
+
+        WeightedSample sample = new WeightedSample(x, w);
+        return sample;
+
+    }
+
+    public Object randomValue(BayesianNetwork bn, Assignment e, RandomVariable var){
+        double random = Math.random();
+        Assignment temp = e.copy();
+        e.set(var, "true");
+        double prob = bn.getProb(var, e);
+        if( random <= prob){
+            return "true";
+        }
+        else{
+            return "false";
+        }
+    }
+
 }
