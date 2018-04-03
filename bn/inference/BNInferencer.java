@@ -1,7 +1,5 @@
 package bn.inference;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -12,7 +10,7 @@ import bn.parser.*;
 
 public class BNInferencer {
     public static void main(String[] argv){
-        //EnumerationAsk wat = new EnumerationAsk();
+        EnumerationAsk asker = new EnumerationAsk();
 
         if(argv[0].contains(".xml")){
             XMLBIFParser x = new XMLBIFParser();
@@ -22,8 +20,8 @@ public class BNInferencer {
                 for(int i = 2; i < argv.length; i+=2){
                     e.put(bn.getVariableByName(argv[i]), argv[i+1]);
                 }
-                //Distribution dist = wat.ask(bn, bn.getVariableByName(argv[1]), e);
-                //System.out.println(dist);
+                Distribution dist = asker.ask(bn, bn.getVariableByName(argv[1]), e);
+                System.out.println(dist);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ParserConfigurationException e) {
