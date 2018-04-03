@@ -11,6 +11,7 @@ import bn.parser.*;
 public class BNInferencer {
     public static void main(String[] argv){
         EnumerationAsk asker = new EnumerationAsk();
+        RejectionSampling rej = new RejectionSampling();
 
         if(argv[0].contains(".xml")){
             XMLBIFParser x = new XMLBIFParser();
@@ -20,7 +21,8 @@ public class BNInferencer {
                 for(int i = 2; i < argv.length; i+=2){
                     e.put(bn.getVariableByName(argv[i]), argv[i+1]);
                 }
-                Distribution dist = asker.ask(bn, bn.getVariableByName(argv[1]), e);
+                //Distribution dist = asker.ask(bn, bn.getVariableByName(argv[1]), e);
+                Distribution dist = rej.rejectionSampling(bn.getVariableByName(argv[1]),e, bn,100000 );
                 System.out.println(dist);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -33,15 +35,15 @@ public class BNInferencer {
             BIFParser x;
             try {
                 x = new BIFParser(new FileInputStream(argv[0]));
-                //System.out.println(x.parseNetwork());
+
                 BayesianNetwork bn = x.parseNetwork();
                 Assignment e = new Assignment();
                 for(int i = 2; i < argv.length; i+=2){
                     e.put(bn.getVariableByName(argv[i]), argv[i+1]);
                 }
-                //Distribution dist = wat.ask(bn, bn.getVariableByName(argv[1]), e);
+                Distribution dist = rej.rejectionSampling(bn.getVariableByName(argv[1]),e, bn,100000 );
 
-                //System.out.println(dist);
+                System.out.println(dist);
             } catch (FileNotFoundException e1) {
                 e1.printStackTrace();
             } catch (IOException e1) {
